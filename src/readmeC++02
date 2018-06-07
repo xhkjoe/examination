@@ -1,0 +1,246 @@
+第一题(60分)：
+​ 按要求分解字符串，输入两个数M，N；M代表输入的M串字符串，N代表输出的每串字符串的位数，不够补0。例如：输入2,8， “abc” ，“123456789”，则输出为“abc00000”,“12345678“,”90000000”
+
+//思路：递归
+#include<iostream>
+#include<string>
+using namespace std;
+void dfs(string a,int n) {
+    if (a.length() <= n) { //如果字符串长度不够，补0，直接输出
+        cout << a;
+        for (int i = 0; i < n - a.length(); i++) {
+            cout << '0';
+        }
+        cout << endl;
+    }
+    else { // 长度超出，截断字符串
+        cout << a.substr(0, n) << endl;
+        dfs(a.substr(n), n);  //递归字符串其余的内容
+    }
+}
+int main() {
+    int m,n;
+    cin >> m >> n;
+    string a;//输入的字符串
+    for (int i = 0; i < m; i++) {
+        cin >> a;
+        dfs(a,n); //递归
+    }
+}
+
+第二题：去除重复字符并排序
+
+运行时间限制：无限制
+
+内容限制： 无限制
+
+输入： 字符串
+
+输出： 去除重复字符并排序的字符串
+
+样例输入： aabcdefff
+
+样例输出： abcdef
+
+//思路：先排序后去重
+#include<iostream>
+#include<string>
+#include<algorithm>
+using namespace std;
+int main() {
+    string s;
+    cin >> s;
+    sort(s.begin(), s.end());//先排序
+    if (s.length() == 0) return 0;
+    for (int i = 1; i < s.length(); i++) {
+        if (s[i] == s[i-1]) {
+            s.erase(i,1);//去重
+            i--;
+        }
+    }
+    cout << s;
+
+}
+
+第三题：等式变换
+输入一个正整数X，在下面的等式左边的数字之间添加+号或者-号，使得等式成立。
+1 2 3 4 5 6 7 8 9 = X
+比如：
+12-34+5-67+89 = 5
+1+23+4-5+6-7-8-9 = 5
+请编写程序，统计满足输入整数的所有整数个数。
+输入： 正整数，等式右边的数字
+输出： 使该等式成立的个数
+样例输入：5
+样例输出：21
+
+//动态规划
+//动态方程（有点难理解）：当前种类=符号位加号+符号为减号+没有符号的种类
+//dp(before,des,n,ex)= dp(before - 1, before, res + des,1) + dp(before - 1, before, res - des,1) + dp(before - 1, before*pow(10, ex)+des, res,ex+1);
+// before: 需要判定的符号前面的数字的个数，初始为8
+// des: 需要判定的符号后面的数字，初始为9
+// n:方程右边的结果
+// ex:阶乘数，因为符号有三种可能，加号，减号，或者没有，如果没有，那么ex就用于计算当前值
+#include<iostream>
+#include<cmath>
+using namespace std;
+int dp(int before, int des, int res,int ex) {
+    if (before == 0) {
+        if (des == res) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    else {
+        return dp(before - 1, before, res + des,1) + dp(before - 1, before, res - des,1) + dp(before - 1, before*pow(10, ex)+des, res,ex+1);
+    }
+}
+int main(){
+    int n; cin >> n;
+    cout << dp(8,9,n,1);
+
+}
+
+/*
+括号匹配
+
+给定一个字符串，里边可能包含“()”、“[]”、“{}”三种括号，请编写程序检查该字符串中的括号是否成对出现，且嵌套关系正确。
+输出：true:若括号成对出现且嵌套关系正确，或该字符串中无括号字符；
+false:若未正确使用括号字符。
+实现时，无需考虑非法输入。
+
+输入描述：
+输入为：
+字符串
+
+例子：(1+2)/(0.5+1)
+
+输出描述：
+输出为：
+字符串
+
+例子：true
+*/
+/*
+思路：栈
+遇到左符号，则压入，遇到右符号，弹出顶层的符号和右符号比对，如果符合，则继续，
+否则输出false
+*/
+#include <iostream>
+#include <vector>
+#include <string>
+using  namespace std;
+
+int whatType(char ch){
+    if(ch=='['||ch=='{'||ch=='('){
+        return -1;
+    }else if(ch==']'||ch=='}'||ch==')'){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+int ifFit(char a,char b){
+    if(a=='{'&&b=='}') return 1;
+    if(a=='['&&b==']') return 1;
+    if(a=='('&&b==')') return 1;
+    return 0;
+}
+
+int main() {
+    vector<char> characters;
+    string a;
+    cin>>a;
+    for (int i = 0; i < a.length(); ++i) {
+        if(whatType(a[i])==-1){
+            characters.push_back(a[i]);
+        }else if(whatType(a[i])==1){
+            if(characters.empty()){
+              cout<<"false";return 0;
+            }else{
+                if(ifFit(characters[characters.size()-1],a[i])==0){
+                    cout<<"false";return 0;
+                }else{
+                    characters.pop_back();
+                }
+            }
+        }
+    }
+    cout<<"true";
+    return 0;
+}
+/*
+平安果
+
+简要描述：
+给定一个M行N列的矩阵（M*N个格子），每个格子中放着一定数量的平安果。
+你从左上角的各自开始，只能向下或者向右走，目的地是右下角的格子。
+每走过一个格子，就把格子上的平安果都收集起来。求你最多能收集到多少平安果。
+注意：当经过一个格子时，需要一次性把格子里的平安果都拿走。
+限制条件：1<N,M<=50；每个格子里的平安果数量是0到1000（包含0和1000）.
+
+输入描述：
+输入包含两部分：
+第一行M, N
+接下来M行，包含N个平安果数量
+
+输出描述：
+一个整数
+最多拿走的平安果的数量
+
+示例：
+
+输入
+2 4
+1 2 3 40
+6 7 8 90
+
+输出
+136
+*/
+/*
+思路：动态规划
+动态方程：当前位置能够获得的最大苹果数=max(从上面走能够获得最大苹果+从左边走能获得最大苹果）
+dp(0,0)=app[0][0]
+*/
+
+
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+int dp(int m, int n,int apple[][50]) {
+    if (m == 0 && n == 0) {
+        return apple[0][0];
+    }
+    else if (m == 0) {
+        return apple[m][n] + dp(m, n - 1, apple);
+    }
+    else if (n == 0) {
+        return apple[m][n] + dp(m-1,n,apple);
+    }
+    else {
+        return max(apple[m][n] + dp(m, n - 1, apple), apple[m][n] + dp(m - 1, n, apple));
+    }
+}
+
+int main() {
+    //freopen("C:\\Users\\zhagshichao\\Desktop\\in.txt","r",stdin);
+    int m, n; cin >> m >> n;
+    int apple[50][50];
+
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            int tmp; cin >> tmp;
+            apple[i][j] = tmp;
+        }
+    }
+
+    cout<<dp(1, 3,apple);
+
+}
+
+
