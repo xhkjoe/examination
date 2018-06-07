@@ -1,8 +1,8 @@
 import com.sun.deploy.util.ArrayUtil;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Scanner;
+import javax.xml.stream.events.Characters;
+import java.util.*;
+
 /**
  * Demo1
  *
@@ -12,6 +12,10 @@ import java.util.Scanner;
 public class Demo1 {
     public static void main(String[] args){
         Scanner sc=new  Scanner(System.in);
+        String[] array="acdf".split("");
+        List<String> a= Arrays.asList(array);
+        Collections.sort(a);
+        System.out.print(a.toString());
         new ArrayList<>().sort(new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
